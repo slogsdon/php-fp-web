@@ -1,0 +1,25 @@
+language: php
+
+php:
+  - 5.6
+  - hhvm
+
+before_install:
+  - composer self-update
+
+install:
+  - composer install
+
+before_script:
+  - mkdir -p tests/tmp/cache
+
+script:
+  - composer test
+
+after_script:
+  - php vendor/bin/coveralls
+
+matrix:
+  allow_failures:
+    - php:
+      - hhvm
