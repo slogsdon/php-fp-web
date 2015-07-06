@@ -1,0 +1,171 @@
+<?php
+namespace FPWeb\Test;
+
+use FPWeb\Route;
+
+class RouteTest extends \PHPUnit_Framework_TestCase
+{
+    protected $basicResult  = null;
+    protected $basicPattern = null;
+    protected $basicHandler = null;
+    protected $basicRequest = null;
+    protected $basicRoutes  = null;
+
+    protected function setup()
+    {
+        $this->basicResult  = 'basicHandler';
+        $this->basicPattern = '/test';
+        $this->basicHandler = function ($request) {
+            return $this->basicResult;
+        };
+        $this->basicRequest = [
+            'uri'    => trim($this->basicPattern, '/'),
+            'server' => ['REQUEST_METHOD' => 'GET'],
+            'params' => [],
+        ];
+        $this->basicRoutes  = [
+            Route\get($this->basicPattern, $this->basicHandler),
+        ];
+    }
+
+    public function testRunBasicMatch()
+    {
+        $result = Route\run($this->basicRequest, $this->basicRoutes);
+
+        $this->assertNotNull($result);
+        $this->assertEquals($result, $this->basicResult);
+    }
+
+    public function testRunBasicNoMatch()
+    {
+        $request = $this->basicRequest;
+        $request['uri'] = 'no-match';
+        $result = Route\run($request, $this->basicRoutes, ['not_found' => function () {
+            return 'not found';
+        }]);
+
+        $this->assertNotNull($result);
+        $this->assertEquals($result, 'not found');
+    }
+
+    public function testMatchBasicMatch()
+    {
+        $result = Route\match($this->basicRequest, $this->basicRoutes);
+
+        $this->assertNotNull($result);
+        $this->assertEquals($result, $this->basicResult);
+    }
+
+    public function testMatchBasicNoMatch()
+    {
+        $request = $this->basicRequest;
+        $request['uri'] = 'no-match';
+        $result = Route\match($request, $this->basicRoutes);
+
+        $this->assertNotNull($result);
+        $this->assertEquals($result, false);
+    }
+
+    public function testCreateBasic()
+    {
+        $route = Route\create($this->basicPattern, $this->basicHandler);
+        $pattern = trim($this->basicPattern, '/');
+
+        $this->assertNotNull($route);
+        $this->assertEquals($route['pattern'], $pattern);
+        $this->assertEquals($route['callback'], $this->basicHandler);
+        $this->assertEquals($route['options'], []);
+    }
+
+    public function testCreateBasicWithOptions()
+    {
+        $route = Route\create(
+            $this->basicPattern,
+            $this->basicHandler,
+            ['method' => 'GET']
+        );
+        $pattern = trim($this->basicPattern, '/');
+
+        $this->assertNotNull($route);
+        $this->assertEquals($route['pattern'], $pattern);
+        $this->assertEquals($route['callback'], $this->basicHandler);
+        $this->assertEquals($route['options'], ['method' => 'GET']);
+    }
+
+    public function testGetBasic()
+    {
+        $route = Route\get($this->basicPattern, $this->basicHandler);
+        $pattern = trim($this->basicPattern, '/');
+
+        $this->assertNotNull($route);
+        $this->assertEquals($route['pattern'], $pattern);
+        $this->assertEquals($route['callback'], $this->basicHandler);
+        $this->assertEquals($route['options'], ['method' => 'GET']);
+    }
+
+    public function testPostBasic()
+    {
+        $route = Route\post($this->basicPattern, $this->basicHandler);
+        $pattern = trim($this->basicPattern, '/');
+
+        $this->assertNotNull($route);
+        $this->assertEquals($route['pattern'], $pattern);
+        $this->assertEquals($route['callback'], $this->basicHandler);
+        $this->assertEquals($route['options'], ['method' => 'POST']);
+    }
+
+    public function testPutBasic()
+    {
+        $route = Route\put($this->basicPattern, $this->basicHandler);
+        $pattern = trim($this->basicPattern, '/');
+
+        $this->assertNotNull($route);
+        $this->assertEquals($route['pattern'], $pattern);
+        $this->assertEquals($route['callback'], $this->basicHandler);
+        $this->assertEquals($route['options'], ['method' => 'PUT']);
+    }
+
+    public function testPatchBasic()
+    {
+        $route = Route\patch($this->basicPattern, $this->basicHandler);
+        $pattern = trim($this->basicPattern, '/');
+
+        $this->assertNotNull($route);
+        $this->assertEquals($route['pattern'], $pattern);
+        $this->assertEquals($route['callback'], $this->basicHandler);
+        $this->assertEquals($route['options'], ['method' => 'PATCH']);
+    }
+
+    public function testDeleteBasic()
+    {
+        $route = Route\delete($this->basicPattern, $this->basicHandler);
+        $pattern = trim($this->basicPattern, '/');
+
+        $this->assertNotNull($route);
+        $this->assertEquals($route['pattern'], $pattern);
+        $this->assertEquals($route['callback'], $this->basicHandler);
+        $this->assertEquals($route['options'], ['method' => 'DELETE']);
+    }
+
+    public function testOptionsBasic()
+    {
+        $route = Route\options($this->basicPattern, $this->basicHandler);
+        $pattern = trim($this->basicPattern, '/');
+
+        $this->assertNotNull($route);
+        $this->assertEquals($route['pattern'], $pattern);
+        $this->assertEquals($route['callback'], $this->basicHandler);
+        $this->assertEquals($route['options'], ['method' => 'OPTIONS']);
+    }
+
+    public function testTraceBasic()
+    {
+        $route = Route\trace($this->basicPattern, $this->basicHandler);
+        $pattern = trim($this->basicPattern, '/');
+
+        $this->assertNotNull($route);
+        $this->assertEquals($route['pattern'], $pattern);
+        $this->assertEquals($route['callback'], $this->basicHandler);
+        $this->assertEquals($route['options'], ['method' => 'TRACE']);
+    }
+}
