@@ -12,8 +12,15 @@ namespace FPWeb\Request;
  */
 function parse(array $params = array())
 {
+    $uri = isset($_SERVER['PATH_INFO'])
+        ? $_SERVER['PATH_INFO']
+        : $_SERVER['REQUEST_URI'];
+
+    if (isset($_SERVER['QUERY_STRING'])) {
+        $uri = str_replace('?' . $_SERVER['QUERY_STRING'], '', $uri);
+    }
     return [
-        'uri'    => trim($_SERVER['REQUEST_URI'], '/'),
+        'uri'    => trim($uri, '/'),
         'server' => $_SERVER,
         'params' => $params,
     ];

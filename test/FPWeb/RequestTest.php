@@ -34,4 +34,17 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($request['server'], $_SERVER);
         $this->assertEquals($request['params'], []);
     }
+
+    public function testParseQueryString()
+    {
+        // REQUEST_URI isn't provided by php-cli :(
+        $_SERVER['REQUEST_URI'] = '/?test=true&';
+        $_SERVER['QUERY_STRING'] = 'test=true&';
+        $request = Request\parse();
+
+        $this->assertNotNull($request);
+        $this->assertEquals($request['uri'], '');
+        $this->assertEquals($request['server'], $_SERVER);
+        $this->assertEquals($request['params'], []);
+    }
 }
