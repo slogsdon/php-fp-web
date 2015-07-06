@@ -1,4 +1,5 @@
 <?php
+
 namespace FPWeb\Test;
 
 use FPWeb\Util;

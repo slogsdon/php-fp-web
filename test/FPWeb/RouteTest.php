@@ -1,6 +1,8 @@
 <?php
+
 namespace FPWeb\Test;
 
+use FPWeb\Response;
 use FPWeb\Route;
 
 class RouteTest extends \PHPUnit_Framework_TestCase
@@ -13,10 +15,14 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 
     protected function setup()
     {
-        $this->basicResult  = 'basicHandler';
+        $text = 'basicHandler';
+        $response = Response\create();
+        $response['body'] = $text;
+        $this->basicResult  = $response;
         $this->basicPattern = '/test';
-        $this->basicHandler = function ($request) {
-            return $this->basicResult;
+        $this->basicHandler = function ($conn) use ($text) {
+            $conn['response']['body'] = $text;
+            return $conn;
         };
         $this->basicRequest = [
             'uri'    => trim($this->basicPattern, '/'),
@@ -28,32 +34,15 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
-    public function testRunBasicMatch()
-    {
-        $result = Route\run($this->basicRequest, $this->basicRoutes);
-
-        $this->assertNotNull($result);
-        $this->assertEquals($result, $this->basicResult);
-    }
-
-    public function testRunBasicNoMatch()
-    {
-        $request = $this->basicRequest;
-        $request['uri'] = 'no-match';
-        $result = Route\run($request, $this->basicRoutes, ['not_found' => function () {
-            return 'not found';
-        }]);
-
-        $this->assertNotNull($result);
-        $this->assertEquals($result, 'not found');
-    }
-
     public function testMatchBasicMatch()
     {
         $result = Route\match($this->basicRequest, $this->basicRoutes);
+        $pattern = trim($this->basicPattern, '/');
 
         $this->assertNotNull($result);
-        $this->assertEquals($result, $this->basicResult);
+        $this->assertEquals($result['pattern'], $pattern);
+        $this->assertEquals($result['callback'], $this->basicHandler);
+        $this->assertEquals($result['options'], ['method' => 'GET']);
     }
 
     public function testMatchBasicNoMatch()

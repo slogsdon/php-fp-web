@@ -5,27 +5,8 @@ namespace FPWeb\Route;
 use FPWeb\Util;
 
 /**
- * Processes the request to build a response.
- *
- * @param $request array
- * @param $routes  array
- * @return string
- */
-function run(array $request, array $routes, array $options = [])
-{
-    if ($body = match($request, $routes)) {
-        return $body;
-    } else {
-        http_response_code(404);
-        return isset($options['not_found'])
-            ? call_user_func($options['not_found'])
-            : '';
-    }
-}
-
-/**
- * Attempts to find a match for the current request, returning the result of the
- * callback on match or false on a no match.
+ * Attempts to find a match for the current request, returning the route on
+ * match or false on a no match.
  *
  * @param $request array
  * @param $routes  array
@@ -36,11 +17,12 @@ function match(array $request, array $routes)
     $match = false;
     $method = $request['server']['REQUEST_METHOD'];
     foreach ($routes as $route) {
-        if ($request['uri'] === $route['pattern'] &&
-            (!isset($route['options']['method']) ||
-                $method === $route['options']['method'])) {
-            $match = call_user_func_array($route['callback'], [$request]);
-            break;
+        $patternMatched = $request['uri'] === $route['pattern'];
+        $methodAllowed = !isset($route['options']['method']) ||
+            $method === $route['options']['method'];
+
+        if ($patternMatched && $methodAllowed) {
+            return $route;
         }
     }
     return $match;

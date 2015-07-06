@@ -48,15 +48,14 @@ Not Found
 <?php
 require 'vendor/autoload.php';
 
-use \FPWeb\Request;
+use \FPWeb\App;
 use \FPWeb\Route;
 
-// bundle params
-$params = Request\prepareParams([$_GET, $_POST]);
-
 // index handler
-$index = function ($request) {
-    return 'index';
+$index = function ($conn) {
+    // TODO: make this process nicer
+    $conn['response']['body'] = 'index';
+    return $conn;
 };
 
 // create routes
@@ -64,13 +63,14 @@ $routes = [
     Route\get('/index', $index),
 ];
 
-// parse request
-$request = Request\parse($params);
-
 // match request and run match
-echo Route\run($request, $routes, [
-    'not_found' => function () {
-        return 'Not Found';
+$response = App\run($routes, [
+    'param_set' => [$_GET, $_POST],
+    'not_found' => function ($conn) {
+        $conn['response']['body'] = 'Not Found';
+        return $conn;
     },
 ]);
+
+printf('<pre><code>%s</code></pre>', print_r($response, true));
 ```
