@@ -44,20 +44,4 @@ class UtilTest extends \PHPUnit_Framework_TestCase
         $this->assertNotEquals($result, $initial);
         $this->assertEquals($result, 'f1');
     }
-
-    public function testResetHeaders()
-    {
-        $result = Util\resetHeaders();
-
-        $this->assertNotNull($result);
-        $this->assertTrue(is_bool($result));
-    }
-
-    public function testResetHeadersForced()
-    {
-        $result = Util\resetHeaders(true);
-
-        $this->assertNotNull($result);
-        $this->assertTrue(is_bool($result));
-    }
 }

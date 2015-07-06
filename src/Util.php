@@ -25,23 +25,3 @@ function pipe(array $functions, $initial = null)
     }
     return $value;
 }
-
-/**
- * Removes extraneous default headers, e.g. X-Powered-By.
- *
- * TODO: Mkae this nicer/more testable. $force is a shim.
- *
- * @param $force boolean
- * @return boolean
- */
-function resetHeaders($force = false)
-{
-    if (!headers_sent() || $force) {
-        foreach (headers_list() as $header) {
-            $name = explode(':', $header)[0];
-            header_remove($name);
-        }
-        return true;
-    }
-    return false;
-}
