@@ -8,7 +8,7 @@ before_install:
   - composer self-update
 
 install:
-  - composer install
+  - composer install --no-interaction
 
 before_script:
   - mkdir -p tests/tmp/cache
