@@ -44,12 +44,26 @@ class AppTest extends \PHPUnit_Framework_TestCase
     public function testRunBasicNoMatch()
     {
         $_SERVER['REQUEST_URI'] = '/no-match';
-        $result = App\run($this->basicRoutes, ['not_found' => function ($conn) {
+        $result = App\run($this->basicRoutes, ['on_error' => function ($conn) {
             $conn['response']['body'] = 'not found';
             return $conn;
         }]);
 
         $this->assertNotNull($result);
+        $this->assertEquals($result['response']['status'], 404);
         $this->assertEquals($result['response']['body'], 'not found');
+    }
+
+    public function testRunBasicMatchNoMethod()
+    {
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $result = App\run($this->basicRoutes, ['on_error' => function ($conn) {
+            $conn['response']['body'] = 'errored';
+            return $conn;
+        }]);
+
+        $this->assertNotNull($result);
+        $this->assertEquals($result['response']['status'], 405);
+        $this->assertEquals($result['response']['body'], 'errored');
     }
 }

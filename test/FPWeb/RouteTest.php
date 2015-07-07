@@ -40,9 +40,20 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $pattern = trim($this->basicPattern, '/');
 
         $this->assertNotNull($result);
-        $this->assertEquals($result['pattern'], $pattern);
-        $this->assertEquals($result['callback'], $this->basicHandler);
-        $this->assertEquals($result['options'], ['method' => 'GET']);
+        $this->assertEquals($result[0], Route\FOUND);
+        $this->assertEquals($result[1]['pattern'], $pattern);
+        $this->assertEquals($result[1]['callback'], $this->basicHandler);
+        $this->assertEquals($result[1]['options'], ['method' => 'GET']);
+    }
+
+    public function testMatchBasicMatchNoMethod()
+    {
+        $request = $this->basicRequest;
+        $request['server']['REQUEST_METHOD'] = 'POST';
+        $result = Route\match($request, $this->basicRoutes);
+
+        $this->assertNotNull($result);
+        $this->assertEquals($result[0], Route\METHOD_NOT_ALLOWED);
     }
 
     public function testMatchBasicNoMatch()
@@ -52,7 +63,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $result = Route\match($request, $this->basicRoutes);
 
         $this->assertNotNull($result);
-        $this->assertEquals($result, false);
+        $this->assertEquals($result[0], Route\NOT_FOUND);
     }
 
     public function testCreateBasic()

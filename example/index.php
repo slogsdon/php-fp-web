@@ -20,7 +20,7 @@ $routes = [
 // match request and run match
 $response = App\run($routes, [
     'param_set' => [$_GET, $_POST],
-    'not_found' => function ($conn) {
+    'on_error' => function ($conn) {
         $conn['response']['body'] = 'Not Found';
         return $conn;
     },

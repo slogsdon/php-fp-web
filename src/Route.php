@@ -4,6 +4,10 @@ namespace FPWeb\Route;
 
 use FPWeb\Util;
 
+const FOUND              = 0;
+const NOT_FOUND          = 1;
+const METHOD_NOT_ALLOWED = 2;
+
 /**
  * Attempts to find a match for the current request, returning the route on
  * match or false on a no match.
@@ -14,7 +18,7 @@ use FPWeb\Util;
  */
 function match(array $request, array $routes)
 {
-    $match = false;
+    $match = [NOT_FOUND];
     $method = $request['server']['REQUEST_METHOD'];
     foreach ($routes as $route) {
         $patternMatched = $request['uri'] === $route['pattern'];
@@ -22,7 +26,12 @@ function match(array $request, array $routes)
             $method === $route['options']['method'];
 
         if ($patternMatched && $methodAllowed) {
-            return $route;
+            $match = [FOUND, $route];
+            break;
+        }
+
+        if ($patternMatched && !$methodAllowed) {
+            $match = [METHOD_NOT_ALLOWED];
         }
     }
     return $match;

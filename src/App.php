@@ -22,7 +22,7 @@ function run(array $routes, array $options = [])
     $params = Request\prepareParams($paramSet);
     $request = Request\parse($params);
     $response = Response\create();
-    $pipeline = makePipeline($request, $routes, $options);
+    $pipeline = wrapPipeline($request, $routes, $options);
 
     return Util\pipe($pipeline, [
         'request'  => $request,
@@ -30,26 +30,42 @@ function run(array $routes, array $options = [])
     ]);
 }
 
-function makePipeline(array $request, array $routes, array $options)
+function wrapPipeline(array $request, array $routes, array $options)
 {
-    $route = Route\match($request, $routes);
-    $funs = null;
-    if ($route === false) {
-        $add404 = function ($conn) {
-            $conn['response']['status'] = 404;
-            return $conn;
-        };
+    $match = Route\match($request, $routes);
+    $routedHandler = null;
+    $successful = false;
 
-        $funs = isset($options['not_found'])
-            ? [[$add404], [$options['not_found']]]
-            : [[$add404]];
-    } else {
-        $funs = [[$route['callback']]];
+    switch ($match[0]) {
+        case Route\NOT_FOUND:
+            $routedHandler = [createStatusHandler(404)];
+            break;
+        case Route\METHOD_NOT_ALLOWED:
+            $routedHandler = [createStatusHandler(405)];
+            break;
+        case Route\FOUND:
+            $successful = true;
+            $routedHandler = [$match[1]['callback']];
+            break;
     }
 
     $pipeline = isset($options['pipeline'])
         ? $options['pipeline']
         : [];
 
-    return array_merge($pipeline, $funs);
+    $handlers = [$routedHandler];
+    if (!$successful && isset($options['on_error'])) {
+        $optional = [$options['on_error']];
+        $handlers = array_merge($handlers, [$optional]);
+    }
+
+    return array_merge($pipeline, $handlers);
+}
+
+function createStatusHandler($status)
+{
+    return function ($conn) use ($status) {
+        $conn['response']['status'] = $status;
+        return $conn;
+    };
 }
