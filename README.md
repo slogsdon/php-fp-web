@@ -1,6 +1,6 @@
 # fp-web
 
-[![Packagist Version](https://img.shields.io/packagist/v/slogsdon/fp-web.svg)]](https://packagist.org/packages/slogsdon/fp-web)
+[![Packagist Version](https://img.shields.io/packagist/v/slogsdon/fp-web.svg)](https://packagist.org/packages/slogsdon/fp-web)
 [![Build Status](https://img.shields.io/travis/slogsdon/php-fp-web.svg?style=flat)](https://travis-ci.org/slogsdon/php-fp-web)
 [![Coverage Status](https://img.shields.io/coveralls/slogsdon/php-fp-web.svg?style=flat)](https://coveralls.io/r/slogsdon/php-fp-web)
 
