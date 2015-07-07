@@ -3,7 +3,7 @@
     "description": "test bed for a functional web toolkit",
     "license": "MIT",
     "type": "library",
-    "version": "0.0.8-dev",
+    "version": "0.0.8",
     "authors": [
         {
             "name": "Shane Logsdon",
